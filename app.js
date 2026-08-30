@@ -143,3 +143,345 @@ document.addEventListener("keydown",e=>{
 );
 
 showPage(location.hash.replace("#","")||"home");
+/* =========================================================
+   VAXIFLOW — ADVANCED INTERACTION LAYER
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* -------------------------------------------------------
+     1. Scroll reveal
+     ------------------------------------------------------- */
+
+  const revealElements = document.querySelectorAll(
+    ".card, .feature-card, .info-card, .stat-card, " +
+    ".team-card, .deliverable-card, section"
+  );
+
+  revealElements.forEach((element) => {
+    element.classList.add("reveal");
+  });
+
+  const revealObserver = new IntersectionObserver(
+    (entries, observer) => {
+
+      entries.forEach((entry) => {
+
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+
+      });
+
+    },
+    {
+      threshold: 0.12
+    }
+  );
+
+  revealElements.forEach((element) => {
+    revealObserver.observe(element);
+  });
+
+
+  /* -------------------------------------------------------
+     2. Floating background particles
+     ------------------------------------------------------- */
+
+  const particleCount = window.innerWidth < 768 ? 12 : 25;
+
+  for (let i = 0; i < particleCount; i++) {
+
+    const particle = document.createElement("span");
+
+    particle.className = "vf-particle";
+
+    particle.style.left =
+      Math.random() * 100 + "%";
+
+    particle.style.animationDuration =
+      (6 + Math.random() * 8) + "s";
+
+    particle.style.animationDelay =
+      (-Math.random() * 10) + "s";
+
+    particle.style.opacity =
+      0.25 + Math.random() * 0.5;
+
+    document.body.appendChild(particle);
+  }
+
+
+  /* -------------------------------------------------------
+     3. Interactive card tilt
+     ------------------------------------------------------- */
+
+  const cards = document.querySelectorAll(
+    ".card, .feature-card, .team-card, .deliverable-card"
+  );
+
+  cards.forEach((card) => {
+
+    card.addEventListener("mousemove", (event) => {
+
+      if (window.innerWidth < 768) return;
+
+      const rect = card.getBoundingClientRect();
+
+      const x =
+        event.clientX - rect.left;
+
+      const y =
+        event.clientY - rect.top;
+
+      const rotateX =
+        ((y / rect.height) - 0.5) * -5;
+
+      const rotateY =
+        ((x / rect.width) - 0.5) * 5;
+
+      card.style.transform =
+        `perspective(800px)
+         rotateX(${rotateX}deg)
+         rotateY(${rotateY}deg)
+         translateY(-6px)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+
+      card.style.transform = "";
+
+    });
+
+  });
+
+
+  /* -------------------------------------------------------
+     4. Magnetic buttons
+     ------------------------------------------------------- */
+
+  const buttons = document.querySelectorAll(
+    ".cta, .btn, .hero-button, button"
+  );
+
+  buttons.forEach((button) => {
+
+    button.addEventListener("mousemove", (event) => {
+
+      if (window.innerWidth < 768) return;
+
+      const rect = button.getBoundingClientRect();
+
+      const x =
+        event.clientX - rect.left - rect.width / 2;
+
+      const y =
+        event.clientY - rect.top - rect.height / 2;
+
+      button.style.transform =
+        `translate(${x * 0.08}px, ${y * 0.08}px)`;
+    });
+
+    button.addEventListener("mouseleave", () => {
+
+      button.style.transform = "";
+
+    });
+
+  });
+
+
+  /* -------------------------------------------------------
+     5. Animated counters
+     ------------------------------------------------------- */
+
+  const counters =
+    document.querySelectorAll("[data-count]");
+
+  const animateCounter = (element) => {
+
+    const target =
+      Number(element.dataset.count);
+
+    const duration = 1200;
+
+    const startTime = performance.now();
+
+    const update = (currentTime) => {
+
+      const progress =
+        Math.min(
+          (currentTime - startTime) / duration,
+          1
+        );
+
+      const eased =
+        1 - Math.pow(1 - progress, 3);
+
+      element.textContent =
+        Math.floor(target * eased);
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        element.textContent = target;
+      }
+
+    };
+
+    requestAnimationFrame(update);
+  };
+
+
+  if (counters.length) {
+
+    const counterObserver =
+      new IntersectionObserver(
+        (entries, observer) => {
+
+          entries.forEach((entry) => {
+
+            if (entry.isIntersecting) {
+
+              animateCounter(entry.target);
+
+              observer.unobserve(entry.target);
+
+            }
+
+          });
+
+        },
+        {
+          threshold: 0.7
+        }
+      );
+
+    counters.forEach((counter) => {
+      counterObserver.observe(counter);
+    });
+  }
+
+
+  /* -------------------------------------------------------
+     6. Click ripple effect
+     ------------------------------------------------------- */
+
+  document.addEventListener("click", (event) => {
+
+    const button =
+      event.target.closest(
+        "button, .btn, .cta, .hero-button"
+      );
+
+    if (!button) return;
+
+    const ripple =
+      document.createElement("span");
+
+    ripple.style.position = "absolute";
+    ripple.style.width = "10px";
+    ripple.style.height = "10px";
+    ripple.style.borderRadius = "50%";
+    ripple.style.background =
+      "rgba(255,255,255,.35)";
+    ripple.style.pointerEvents = "none";
+
+    const rect =
+      button.getBoundingClientRect();
+
+    ripple.style.left =
+      (event.clientX - rect.left) + "px";
+
+    ripple.style.top =
+      (event.clientY - rect.top) + "px";
+
+    ripple.style.transform =
+      "translate(-50%, -50%) scale(1)";
+
+    ripple.style.transition =
+      "transform .6s ease, opacity .6s ease";
+
+    button.appendChild(ripple);
+
+    requestAnimationFrame(() => {
+
+      ripple.style.transform =
+        "translate(-50%, -50%) scale(18)";
+
+      ripple.style.opacity = "0";
+
+    });
+
+    setTimeout(() => {
+      ripple.remove();
+    }, 650);
+
+  });
+
+
+  /* -------------------------------------------------------
+     7. Keyboard shortcut
+     ------------------------------------------------------- */
+
+  document.addEventListener("keydown", (event) => {
+
+    if (
+      event.key === "/" &&
+      document.activeElement.tagName !== "INPUT" &&
+      document.activeElement.tagName !== "TEXTAREA"
+    ) {
+
+      event.preventDefault();
+
+      const search =
+        document.querySelector(
+          "#paletteInput, #searchInput, " +
+          "[data-search], input[type='search']"
+        );
+
+      if (search) {
+        search.focus();
+      }
+
+    }
+
+  });
+
+
+  /* -------------------------------------------------------
+     8. Smooth internal navigation
+     ------------------------------------------------------- */
+
+  document.querySelectorAll(
+    'a[href^="#"]'
+  ).forEach((link) => {
+
+    link.addEventListener("click", (event) => {
+
+      const targetId =
+        link.getAttribute("href");
+
+      if (
+        !targetId ||
+        targetId === "#"
+      ) return;
+
+      const target =
+        document.querySelector(targetId);
+
+      if (!target) return;
+
+      event.preventDefault();
+
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    });
+
+  });
+
+});

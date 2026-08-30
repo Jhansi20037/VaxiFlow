@@ -1,0 +1,9 @@
+{
+  "name":"VaxiFlow Academic Project Showcase",
+  "short_name":"VaxiFlow",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#ffffff",
+  "theme_color":"#12b8a9",
+  "icons":[{"src":"vaxiflow-logo.png","sizes":"any","type":"image/png"}]
+}
